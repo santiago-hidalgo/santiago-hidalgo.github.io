@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santiago Hidalgo</title>
+<style>
+  :root {
+    --blue: #0071e3;
+    --text: #1d1d1f;
+    --text2: #6e6e73;
+    --text3: #86868b;
+    --white: #ffffff;
+    --light: #f5f5f7;
+    --div: #d2d2d7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif; background:var(--white); color:var(--text); overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+
+/* PROGRESS */
+#progress { position:fixed; top:0; left:0; height:2px; background:var(–blue); z-index:9999; width:0%; transition:width .1s linear; }
+
+/* NAV */
+nav { position:fixed; top:0; left:0; right:0; z-index:1000; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 22px; background:rgba(255,255,255,.82); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid rgba(0,0,0,.08); transition:background .3s,border-color .3s; }
+nav.dk { background:rgba(0,0,0,.82); border-bottom-color:rgba(255,255,255,.08); }
+.n-logo { font-size:18px; font-weight:600; letter-spacing:-.4px; color:var(–text); }
+nav.dk .n-logo { color:#f5f5f7; }
+.n-links { display:flex; gap:24px; list-style:none; }
+.n-links a { font-size:12px; color:var(–text); text-decoration:none; opacity:.75; transition:opacity .2s; }
+nav.dk .n-links a { color:#f5f5f7; }
+.n-links a:hover { opacity:1; }
+
+/* REVEAL */
+.rv { opacity:0; transform:translateY(20px); transition:opacity .7s cubic-bezier(.25,.46,.45,.94),transform .7s cubic-bezier(.25,.46,.45,.94); }
+.rv.on { opacity:1; transform:translateY(0); }
+.d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s} .d4{transition-delay:.4s}
+
+section { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:120px 24px 80px; position:relative; overflow:hidden; }
+
+/* ── HERO ── */
+#hero { background:#000; min-height:100vh; justify-content:flex-end; padding-bottom:100px; text-align:center; }
+.h-visual { position:absolute; top:0; left:0; right:0; height:62%; display:flex; align-items:center; justify-content:center; }
+.box { width:190px; height:250px; background:linear-gradient(160deg,#2a2a2a 0%,#0f0f0f 60%,#1c1c1c 100%); border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; box-shadow:0 60px 120px rgba(0,0,0,.9),0 0 0 .5px rgba(255,255,255,.1); animation:flt 5s ease-in-out infinite; }
+.box::before { content:’’; position:absolute; top:0; left:12%; right:12%; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent); }
+.box-lid { position:absolute; top:0; left:0; right:0; height:50%; background:linear-gradient(180deg,rgba(255,255,255,.06),transparent); border-radius:18px 18px 0 0; animation:lid 1.8s cubic-bezier(.4,0,.2,1) 1s both; transform-origin:top; }
+.box-i { font-size:68px; font-weight:700; letter-spacing:-.04em; color:#f5f5f7; line-height:1; }
+.box-m { font-size:11px; font-weight:500; color:#555; letter-spacing:.08em; text-transform:uppercase; margin-top:10px; }
+.glow { position:absolute; width:500px; height:500px; background:radial-gradient(circle,rgba(0,113,227,.12) 0%,transparent 70%); top:30%; left:50%; transform:translateX(-50%); pointer-events:none; }
+
+/* hero photo overlay */
+.hero-photo-wrap { position:absolute; top:0; left:0; right:0; bottom:0; }
+.hero-photo-wrap img { width:100%; height:100%; object-fit:cover; opacity:.18; }
+.hero-photo-btn { position:absolute; top:70px; right:24px; background:rgba(255,255,255,.12); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.2); border-radius:100px; padding:7px 14px; font-size:12px; color:rgba(255,255,255,.7); cursor:pointer; font-family:inherit; transition:all .2s; }
+.hero-photo-btn:hover { background:rgba(255,255,255,.2); color:#fff; }
+.hero-photo-btn input { display:none; }
+
+.h-ey { font-size:17px; font-weight:600; color:var(–blue); margin-bottom:8px; }
+.h-head { font-size:clamp(52px,10vw,92px); font-weight:700; letter-spacing:-.05em; line-height:1; color:#f5f5f7; margin-bottom:14px; }
+.h-sub { font-size:clamp(17px,2vw,22px); color:#86868b; line-height:1.4; margin-bottom:36px; }
+.h-cta { font-size:17px; color:var(–blue); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:gap .2s; }
+.h-cta:hover { gap:10px; }
+.h-cta::after { content:’›’; font-size:22px; }
+.scroll-hint { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); font-size:11px; color:#48484a; letter-spacing:.08em; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.s-line { width:1px; height:30px; background:linear-gradient(180deg,#555,transparent); animation:sline 2s ease-in-out infinite; }
+
+/* ── TAGLINE ── */
+#tagline { background:var(–white); min-height:70vh; text-align:center; }
+.tg-h { font-size:clamp(44px,8vw,80px); font-weight:700; letter-spacing:-.05em; line-height:1.05; max-width:860px; }
+.grad { background:linear-gradient(120deg,#0071e3,#34aadc,#5856d6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.tg-p { font-size:21px; color:var(–text2); max-width:520px; margin-top:20px; line-height:1.5; letter-spacing:-.01em; }
+
+/* ── SPECS ── */
+#specs { background:var(–light); min-height:auto; padding:100px 24px; }
+.ey { font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(–text2); margin-bottom:8px; text-align:center; }
+.st { font-size:clamp(36px,6vw,60px); font-weight:700; letter-spacing:-.04em; line-height:1.05; text-align:center; margin-bottom:52px; }
+.sg { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; max-width:960px; width:100%; background:var(–div); border-radius:18px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,.06); }
+.sp { background:var(–white); padding:32px 28px; display:flex; flex-direction:column; gap:6px; transition:background .2s; }
+.sp:hover { background:#fafafa; }
+.sk { font-size:12px; font-weight:500; letter-spacing:.02em; color:var(–text2); text-transform:uppercase; }
+.sv { font-size:17px; font-weight:500; color:var(–text); letter-spacing:-.02em; line-height:1.3; }
+.sv.big { font-size:52px; font-weight:700; letter-spacing:-.04em; line-height:1; }
+.sv.apple-fan { font-size:15px; display:flex; align-items:center; gap:6px; }
+.apple-badge { display:inline-flex; align-items:center; gap:4px; background:#000; color:#fff; font-size:12px; font-weight:600; padding:3px 10px; border-radius:100px; letter-spacing:.01em; }
+
+/* ── INBOX ── */
+#inbox { background:#000; min-height:auto; padding:100px 24px; }
+#inbox .st { color:#f5f5f7; }
+.chips { display:flex; flex-wrap:wrap; gap:10px; max-width:1000px; width:100%; justify-content:center; }
+.chip { background:#1d1d1f; border:1px solid #2d2d2d; border-radius:100px; padding:11px 18px; display:flex; align-items:center; gap:9px; transition:all .22s cubic-bezier(.25,.46,.45,.94); }
+.chip:hover { background:#2a2a2c; border-color:#444; transform:scale(1.03); }
+.ci { font-size:19px; }
+.cn { font-size:14px; font-weight:500; color:#f5f5f7; letter-spacing:-.02em; }
+.cd { font-size:11px; color:#6e6e73; }
+
+/* ── ORIGIN ── */
+#origin { background:var(–white); min-height:auto; padding:100px 24px; }
+.og { display:grid; grid-template-columns:1fr 1fr; gap:52px; max-width:960px; width:100%; align-items:center; }
+.ocard { background:var(–light); border-radius:20px; overflow:hidden; aspect-ratio:4/5; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
+.oflag { font-size:72px; margin-bottom:12px; }
+.ocity { font-size:36px; font-weight:700; letter-spacing:-.04em; }
+.osub { font-size:17px; color:var(–text2); margin-top:4px; }
+.obadge { position:absolute; bottom:20px; background:rgba(0,0,0,.06); border-radius:100px; padding:6px 14px; font-size:12px; font-weight:500; color:var(–text2); }
+.pbtn { position:absolute; bottom:16px; right:16px; background:rgba(0,0,0,.45); backdrop-filter:blur(10px); border:none; border-radius:100px; padding:7px 14px; font-size:12px; color:#fff; cursor:pointer; font-family:inherit; transition:background .2s; }
+.pbtn:hover { background:rgba(0,0,0,.7); }
+.pbtn input { display:none; }
+.tl { display:flex; flex-direction:column; }
+.tlr { padding:20px 0; border-bottom:1px solid var(–div); display:flex; gap:14px; align-items:flex-start; }
+.tlr:first-child { padding-top:0; }
+.tlr:last-child { border-bottom:none; }
+.tli { width:34px; height:34px; background:var(–light); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; margin-top:2px; }
+.tly { font-size:11px; font-weight:500; color:var(–blue); letter-spacing:.03em; text-transform:uppercase; margin-bottom:2px; }
+.tlt { font-size:17px; font-weight:600; letter-spacing:-.02em; margin-bottom:3px; }
+.tld { font-size:14px; color:var(–text2); line-height:1.5; }
+
+/* ── WORLD ── */
+#world { background:#000; min-height:auto; padding:100px 24px; text-align:center; }
+.wn { font-size:clamp(110px,22vw,190px); font-weight:700; letter-spacing:-.07em; color:#f5f5f7; line-height:1; display:block; }
+.wl { font-size:clamp(22px,4vw,42px); font-weight:700; letter-spacing:-.04em; color:#48484a; margin-bottom:50px; }
+.ctags { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; max-width:820px; }
+.ct { font-size:13px; color:#86868b; padding:5px 12px; border:1px solid #2a2a2a; border-radius:100px; transition:all .2s; cursor:default; }
+.ct:hover { color:#f5f5f7; border-color:#555; }
+.ct.lv { color:var(–blue); border-color:rgba(0,113,227,.35); }
+.wnote { font-size:12px; color:#444; margin-top:14px; }
+
+/* ── TECH ── */
+#techstack { background:var(–light); min-height:auto; padding:100px 24px; }
+.tg { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; max-width:960px; width:100%; }
+.tc { background:var(–white); border-radius:18px; padding:26px 20px; display:flex; flex-direction:column; gap:10px; box-shadow:0 2px 12px rgba(0,0,0,.06); transition:transform .3s cubic-bezier(.25,.46,.45,.94),box-shadow .3s; }
+.tc:hover { transform:translateY(-4px); box-shadow:0 16px 36px rgba(0,0,0,.1); }
+.tci { font-size:30px; }
+.tcn { font-size:15px; font-weight:600; letter-spacing:-.02em; }
+.tcd { font-size:13px; color:var(–text2); line-height:1.4; }
+
+/* ── PASSIONS ── */
+#passions { background:var(–white); min-height:auto; padding:100px 24px; }
+
+/* First bento: Travel + 4 cards */
+.bento1 { display:grid; grid-template-columns:2fr 1fr 1fr; grid-template-rows:220px 220px; gap:14px; max-width:960px; width:100%; }
+
+/* Second bento: Music + Audiobooks + 2 cards */
+.bento2 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:14px; max-width:960px; width:100%; margin-top:14px; }
+
+.bc { background:var(–light); border-radius:20px; padding:26px; display:flex; flex-direction:column; justify-content:flex-end; position:relative; overflow:hidden; transition:transform .3s cubic-bezier(.25,.46,.45,.94); cursor:default; }
+.bc:hover { transform:scale(1.015); }
+.bc.dk { background:#1d1d1f; }
+.bc.bl { background:linear-gradient(135deg,#0071e3,#34aadc); }
+.bc.bk { background:#000; }
+.bc.featured { grid-row:1/3; background:#000; }
+.bc.wine { background:linear-gradient(135deg,#1c1c2e,#2d1b2e); }
+
+.be { font-size:34px; position:absolute; top:22px; left:24px; }
+.bt { font-size:19px; font-weight:700; letter-spacing:-.04em; line-height:1.1; color:var(–text); }
+.bc.dk .bt,.bc.bl .bt,.bc.bk .bt,.bc.featured .bt,.bc.wine .bt { color:#f5f5f7; }
+.bs { font-size:13px; color:var(–text2); margin-top:4px; line-height:1.4; }
+.bc.dk .bs { color:#86868b; }
+.bc.bl .bs { color:rgba(255,255,255,.75); }
+.bc.featured .bs,.bc.bk .bs { color:#86868b; }
+.bc.wine .bs { color:#c9a0dc; }
+
+.btags { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+.btag { font-size:11px; background:rgba(255,255,255,.1); color:rgba(255,255,255,.8); padding:3px 8px; border-radius:100px; font-weight:500; }
+
+/* music vinyl visual */
+.vinyl { position:absolute; top:-20px; right:-20px; width:100px; height:100px; border-radius:50%; background:conic-gradient(#1a1a1a 0deg,#2a2a2a 30deg,#111 60deg,#333 90deg,#1a1a1a 120deg,#222 180deg,#111 240deg,#2a2a2a 300deg,#1a1a1a 360deg); opacity:.5; animation:spin 8s linear infinite; }
+.vinyl::after { content:’’; position:absolute; top:50%;left:50%;width:20px;height:20px;background:#000;border-radius:50%;transform:translate(-50%,-50%); }
+
+/* library photo zone */
+.lib-zone { width:100%; aspect-ratio:16/9; background:rgba(255,255,255,.05); border:1.5px dashed rgba(255,255,255,.15); border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; transition:border-color .2s; margin-top:12px; font-size:12px; color:rgba(255,255,255,.35); }
+.lib-zone:hover { border-color:rgba(255,255,255,.3); color:rgba(255,255,255,.6); }
+.lib-zone input { display:none; }
+
+/* ── HACKER ── */
+#hacker { background:#000; min-height:auto; padding:100px 24px; }
+.hinner { max-width:720px; width:100%; text-align:center; }
+#hacker .st { color:#f5f5f7; }
+.hp { font-size:19px; color:#86868b; line-height:1.5; margin-bottom:44px; }
+.hp em { color:#f5f5f7; font-style:normal; }
+.term { background:#1c1c1e; border-radius:16px; overflow:hidden; text-align:left; border:1px solid #2d2d2d; box-shadow:0 40px 80px rgba(0,0,0,.6); }
+.tbar { background:#2c2c2e; padding:11px 16px; display:flex; align-items:center; gap:6px; }
+.tdot { width:12px;height:12px;border-radius:50%; }
+.tdot.r{background:#ff5f57} .tdot.y{background:#ffbd2e} .tdot.g{background:#28c840}
+.ttitle { font-size:13px; color:#6e6e73; margin:0 auto; font-family:‘SF Mono’,Menlo,Monaco,monospace; }
+.tbody { padding:22px 26px; font-family:‘SF Mono’,Menlo,Monaco,‘Courier New’,monospace; font-size:14px; line-height:1.9; }
+.tline { display:block; }
+.tp{color:#32d74b} .tc2{color:#f5f5f7} .to{color:#30d158} .tcm{color:#444}
+.cur { display:inline-block; width:8px; height:14px; background:#f5f5f7; vertical-align:text-bottom; animation:blink 1s step-end infinite; }
+
+/* ── FINAL ── */
+#final { background:var(–light); text-align:center; min-height:80vh; padding:120px 24px; }
+.fey { font-size:17px; font-weight:600; color:var(–blue); margin-bottom:12px; }
+.fh { font-size:clamp(44px,8vw,76px); font-weight:700; letter-spacing:-.05em; line-height:1; margin-bottom:16px; }
+.fp { font-size:19px; color:var(–text2); max-width:460px; line-height:1.5; letter-spacing:-.01em; margin-bottom:56px; }
+.fstats { display:flex; border:1px solid var(–div); border-radius:20px; overflow:hidden; background:var(–white); max-width:740px; width:100%; box-shadow:0 4px 24px rgba(0,0,0,.06); }
+.fs { flex:1; padding:28px 14px; border-right:1px solid var(–div); display:flex; flex-direction:column; gap:4px; transition:background .2s; }
+.fs:last-child{border-right:none}
+.fs:hover{background:#fafafa}
+.fn { font-size:34px; font-weight:700; letter-spacing:-.04em; }
+.fl { font-size:11px; font-weight:500; color:var(–text2); letter-spacing:.04em; text-transform:uppercase; }
+.nblock { border-top:1px solid var(–div); padding-top:44px; margin-top:44px; max-width:740px; width:100%; }
+.nbig { font-size:clamp(32px,5vw,52px); font-weight:700; letter-spacing:-.04em; }
+.nrole { font-size:17px; color:var(–text2); margin-top:8px; letter-spacing:-.01em; line-height:1.6; }
+
+/* ── INLINE PHOTO SLOTS ── */
+.photo-slot { border-radius:16px; overflow:hidden; position:relative; background:var(–light); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .3s; }
+.photo-slot:hover { transform:scale(1.01); }
+.photo-slot img { position:absolute; top:0;left:0;width:100%;height:100%;object-fit:cover; }
+.photo-slot input { display:none; }
+.photo-slot-label { display:flex; flex-direction:column; align-items:center; gap:8px; color:var(–text2); font-size:13px; z-index:1; }
+.photo-slot-label span:first-child { font-size:28px; }
+.photo-slot-dark { background:#1d1d1f; }
+.photo-slot-dark .photo-slot-label { color:#6e6e73; }
+.photo-caption { position:absolute; bottom:0;left:0;right:0; background:linear-gradient(transparent,rgba(0,0,0,.6)); padding:16px 16px 12px; font-size:13px; font-weight:500; color:#fff; display:none; }
+/* Add family section */
+#family { background:var(–white); min-height:auto; padding:100px 24px; }
+.fam-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; max-width:960px; width:100%; align-items:center; }
+.fam-photos { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:12px; height:440px; }
+.fam-photos .photo-slot:first-child { grid-row:1/3; }
+
+/* DOWNLOAD BTN */
+#dl-btn { position:fixed; bottom:24px; right:24px; z-index:9998; background:#0071e3; color:#fff; border:none; border-radius:100px; padding:12px 22px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; box-shadow:0 4px 24px rgba(0,113,227,.4); transition:all .2s; display:flex; align-items:center; gap:8px; }
+#dl-btn:hover { background:#0077ed; transform:scale(1.03); }
+#dl-btn.saving { background:#34c759; }
+
+/* KEYFRAMES */
+@keyframes flt { 0%,100%{transform:translateY(0) rotateY(0deg)} 30%{transform:translateY(-14px) rotateY(4deg)} 70%{transform:translateY(-8px) rotateY(-4deg)} }
+@keyframes lid { 0%{transform:perspective(400px) rotateX(0deg)} 100%{transform:perspective(400px) rotateX(-110deg);opacity:0} }
+@keyframes blink { 50%{opacity:0} }
+@keyframes sline { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 100%{transform:scaleY(0);transform-origin:bottom} }
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* RESPONSIVE */
+@media(max-width:768px){
+nav .n-links{display:none}
+.sg{grid-template-columns:1fr 1fr}
+.og{grid-template-columns:1fr}
+.tg{grid-template-columns:repeat(2,1fr)}
+.bento1{grid-template-columns:1fr;grid-template-rows:auto}
+.bento2{grid-template-columns:1fr 1fr}
+.bc.featured{grid-row:auto}
+.fstats{flex-direction:column}
+.fs{border-right:none;border-bottom:1px solid var(–div)}
+.fs:last-child{border-bottom:none}
+.gallery-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+
+</head>
+<body>
+
+<style>
+  #lockscreen {
+    position:fixed; inset:0; background:#000; z-index:99999;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  #lockscreen .lock-box {
+    display:flex; flex-direction:column; align-items:center; gap:24px;
+    width:100%; max-width:320px; padding:0 24px;
+  }
+  #lockscreen .lock-icon { font-size:48px; margin-bottom:4px; }
+  #lockscreen h2 { font-size:28px; font-weight:700; letter-spacing:-.04em; color:#f5f5f7; margin:0; }
+  #lockscreen p { font-size:15px; color:#6e6e73; margin:0; text-align:center; }
+  #lockscreen input {
+    width:100%; padding:14px 18px; border-radius:12px;
+    border:1px solid #2d2d2d; background:#1c1c1e;
+    color:#f5f5f7; font-size:17px; font-family:inherit;
+    text-align:center; letter-spacing:.15em;
+    outline:none; transition:border-color .2s;
+  }
+  #lockscreen input:focus { border-color:#0071e3; }
+  #lockscreen input::placeholder { color:#48484a; letter-spacing:.05em; }
+  #lockscreen button {
+    width:100%; padding:14px; border-radius:12px;
+    background:#0071e3; color:#fff; border:none;
+    font-size:17px; font-weight:600; font-family:inherit;
+    cursor:pointer; transition:background .2s;
+  }
+  #lockscreen button:hover { background:#0077ed; }
+  #lockscreen .lock-error {
+    font-size:13px; color:#ff453a; display:none; margin-top:-12px;
+  }
+  #lockscreen.fade-out {
+    animation: lockFade .5s ease forwards;
+  }
+  @keyframes lockFade { to { opacity:0; pointer-events:none; } }
+</style>
+
+<div id="lockscreen">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <h2>Santiago Hidalgo</h2>
+    <p>Contenido privado.<br>Ingresa la contraseña para continuar.</p>
+    <input type="password" id="pwd-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkPwd()">
+    <div class="lock-error" id="lock-error">Contraseña incorrecta. Intenta de nuevo.</div>
+    <button onclick="checkPwd()">Entrar →</button>
+  </div>
+</div>
+
+<script>
+  function checkPwd() {
+    const val = document.getElementById('pwd-input').value;
+    if (val === 'loja7') {
+      document.getElementById('lockscreen').classList.add('fade-out');
+      setTimeout(() => document.getElementById('lockscreen').remove(), 500);
+    } else {
+      const err = document.getElementById('lock-error');
+      err.style.display = 'block';
+      document.getElementById('pwd-input').value = '';
+      document.getElementById('pwd-input').focus();
+      setTimeout(() => err.style.display = 'none', 3000);
+    }
+  }
+  document.getElementById('pwd-input').focus();
+</script>
+
+<div id="progress"></div>
+<button id="dl-btn" onclick="downloadWithPhotos()" title="Descargar HTML con fotos incluidas">📥 Guardar con fotos</button>
+
+<nav id="nav">
+  <span class="n-logo">Santiago Hidalgo</span>
+  <ul class="n-links">
+    <li><a href="#family">❤️ Familia</a></li>
+    <li><a href="#specs">⚙️ Specs</a></li>
+    <li><a href="#origin">📍 Origen</a></li>
+    <li><a href="#world">🌍 Mundo</a></li>
+    <li><a href="#passions">✨ Passions</a></li>
+    <li><a href="#hacker">🔓 Life Hacker</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+
+<section id="hero">
+  <div class="glow"></div>
+  <div class="hero-photo-wrap">
+    <img id="hero-bg" src="" alt="" style="display:none;">
+  </div>
+  <label class="hero-photo-btn">
+    <input type="file" accept="image/*" onchange="heroBg(this)">
+    📷 Agregar foto personal
+  </label>
+  <div class="h-visual">
+    <div class="box">
+      <div class="box-lid"></div>
+      <div class="box-i">SH</div>
+      <div class="box-m">Santiago Hidalgo</div>
+    </div>
+  </div>
+  <div class="rv">
+    <div class="h-ey">Edición Especial · Unboxing</div>
+    <h1 class="h-head">Santiago<br>Hidalgo</h1>
+    <p class="h-sub">Lojano de corazón. Curioso por naturaleza.<br>Obsesionado con hacerlo mejor.</p>
+    <a href="#specs" class="h-cta">Conoce más</a>
+  </div>
+  <div class="scroll-hint"><span>SCROLL</span><div class="s-line"></div></div>
+</section>
+
+<!-- ══ TAGLINE ══ -->
+
+<section id="tagline">
+  <h2 class="tg-h rv">Ingeniero. MBA.<br><span class="grad">Explorador del mundo.</span></h2>
+  <p class="tg-p rv d2">45 años construyendo experiencias, liderando equipos y aprendiendo que siempre hay una forma mejor de hacer las cosas.</p>
+</section>
+
+<!-- ══ FAMILIA ══ -->
+
+<section id="family">
+  <div class="ey rv" style="text-align:center">❤️ Lo más importante</div>
+  <h2 class="st rv d1">Mi familia</h2>
+  <div class="fam-grid">
+    <div class="fam-photos rv d1">
+      <label class="photo-slot">
+        <input type="file" accept="image/*" onchange="inlinePhoto(this,'fp0','fc0')">
+        <div class="photo-slot-label"><span>👨‍👩‍👧‍👦</span><span>Foto familiar</span></div>
+        <img id="fp0" src="" style="display:none;">
+        <div class="photo-caption" id="fc0">La familia</div>
+      </label>
+      <label class="photo-slot">
+        <input type="file" accept="image/*" onchange="inlinePhoto(this,'fp1','fc1')">
+        <div class="photo-slot-label"><span>🐕</span><span>Los perros</span></div>
+        <img id="fp1" src="" style="display:none;">
+        <div class="photo-caption" id="fc1">Los perros</div>
+      </label>
+      <label class="photo-slot">
+        <input type="file" accept="image/*" onchange="inlinePhoto(this,'fp2','fc2')">
+        <div class="photo-slot-label"><span>✈️</span><span>Viaje en familia</span></div>
+        <img id="fp2" src="" style="display:none;">
+        <div class="photo-caption" id="fc2">Viaje en familia</div>
+      </label>
+    </div>
+    <div class="rv d2">
+      <p style="font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.04em;line-height:1.1;margin-bottom:20px;">Somos 5.<br>Más 3 perros.</p>
+      <p style="font-size:19px;color:var(--text2);line-height:1.6;margin-bottom:28px;">Mi familia es lo primero. Viajamos juntos, vivimos cada aventura juntos. Con mis hijos armo Legos, robots y juego ajedrez. Lo mejor de la vida.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <span style="background:var(--light);border-radius:100px;padding:8px 16px;font-size:14px;font-weight:500;">🧩 Legos con los hijos</span>
+        <span style="background:var(--light);border-radius:100px;padding:8px 16px;font-size:14px;font-weight:500;">♟️ Ajedrez</span>
+        <span style="background:var(--light);border-radius:100px;padding:8px 16px;font-size:14px;font-weight:500;">🌍 Viajamos todos juntos</span>
+        <span style="background:var(--light);border-radius:100px;padding:8px 16px;font-size:14px;font-weight:500;">🐕 3 perros</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SPECS ══ -->
+
+<section id="specs">
+  <div class="ey rv">Ficha técnica</div>
+  <h2 class="st rv d1">Especificaciones</h2>
+  <div class="sg rv d2">
+    <div class="sp"><span class="sk">Versión</span><span class="sv big">45</span></div>
+    <div class="sp"><span class="sk">Países visitados</span><span class="sv big">45</span></div>
+    <div class="sp"><span class="sk">Países vividos</span><span class="sv big">3</span></div>
+    <div class="sp"><span class="sk">Modelo base</span><span class="sv">Ingeniero Electrónico</span></div>
+    <div class="sp"><span class="sk">Upgrade</span><span class="sv">MBA · EADA Business School</span></div>
+    <div class="sp"><span class="sk">Upgrade #2</span><span class="sv">Management of Technology · AIT SOM</span></div>
+    <div class="sp"><span class="sk">Primera banca</span><span class="sv">ING Group</span></div>
+    <div class="sp"><span class="sk">Familia</span><span class="sv">5 personas · 3 perros 🐕</span></div>
+    <div class="sp"><span class="sk">Plataforma de vida</span><span class="sv apple-fan"><span class="apple-badge">🍎 Apple</span> All-in. Sin excepciones.</span></div>
+  </div>
+</section>
+
+<!-- ══ EN LA CAJA ══ -->
+
+<section id="inbox">
+  <div class="ey rv" style="color:#6e6e73">📦 Contenido del empaque</div>
+  <h2 class="st rv d1">¿Qué hay en la caja?</h2>
+  <div class="chips rv d2">
+    <div class="chip"><span class="ci">👨‍👩‍👧‍👦</span><div><div class="cn">La Familia</div><div class="cd">5 personas · lo más importante</div></div></div>
+    <div class="chip"><span class="ci">🐕</span><div><div class="cn">Los Perros</div><div class="cd">3 · parte del equipo</div></div></div>
+    <div class="chip"><span class="ci">🌍</span><div><div class="cn">45 Países</div><div class="cd">y contando</div></div></div>
+    <div class="chip"><span class="ci">🍎</span><div><div class="cn">Apple Fan</div><div class="cd">iPhone · Mac · iPad · Watch · y más</div></div></div>
+    <div class="chip"><span class="ci">🤖</span><div><div class="cn">AI Toolkit</div><div class="cd">siempre al día</div></div></div>
+    <div class="chip"><span class="ci">📷</span><div><div class="cn">Cámara</div><div class="cd">siempre lista</div></div></div>
+    <div class="chip"><span class="ci">📈</span><div><div class="cn">IBKR</div><div class="cd">portfolio activo</div></div></div>
+    <div class="chip"><span class="ci">📚</span><div><div class="cn">Audible</div><div class="cd">audiolibros · siempre en play</div></div></div>
+    <div class="chip"><span class="ci">🎙️</span><div><div class="cn">Podcasts</div><div class="cd">Apple Podcasts · siempre aprendiendo</div></div></div>
+    <div class="chip"><span class="ci">🥩</span><div><div class="cn">Parrilla Pro</div><div class="cd">carnes de nivel</div></div></div>
+    <div class="chip"><span class="ci">🎾</span><div><div class="cn">Raqueta</div><div class="cd">tenis & fútbol</div></div></div>
+    <div class="chip"><span class="ci">🎮</span><div><div class="cn">Gaming</div><div class="cd">último lanzamiento</div></div></div>
+    <div class="chip"><span class="ci">⚡</span><div><div class="cn">Gadgets</div><div class="cd">early adopter</div></div></div>
+  </div>
+</section>
+
+<!-- ══ ORIGIN ══ -->
+
+<section id="origin">
+  <div class="ey rv" style="text-align:center">📍 Historia de origen</div>
+  <h2 class="st rv d1">Made in Loja</h2>
+  <div class="og">
+    <div class="ocard rv d1">
+      <span class="oflag">🇪🇨</span>
+      <div class="ocity">Loja</div>
+      <div class="osub">Ecuador · Corazón</div>
+      <div class="obadge">Nací en Quito · Soy lojano de alma</div>
+      <label class="pbtn">
+        <input type="file" accept="image/*" onchange="fillCard(this,'img-loja',this.closest('label'))">
+        📷 Agregar foto
+      </label>
+      <img id="img-loja" src="" alt="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:20px;">
+    </div>
+    <div class="tl rv d2">
+      <div class="tlr">
+        <div class="tli">📍</div>
+        <div><div class="tly">Origen</div><div class="tlt">Quito → Loja</div><div class="tld">Nací en Quito, pero me hice lojano. Loja es mi identidad, mi raíz, mi orgullo.</div></div>
+      </div>
+      <div class="tlr">
+        <div class="tli">🎓</div>
+        <div><div class="tly">Formación</div><div class="tlt">Ingeniería + MBA</div><div class="tld">La mente técnica más el pensamiento de negocios. Una combinación que cambia todo.</div></div>
+      </div>
+      <div class="tlr">
+        <div class="tli">🌍</div>
+        <div><div class="tly">Experiencia global</div><div class="tlt">Holanda · España · Tailandia</div><div class="tld">Viví en 3 países. Trabajé en Holanda, Panamá, Colombia, Costa Rica, El Salvador, Guatemala y España.</div></div>
+      </div>
+      <div class="tlr">
+        <div class="tli">🏦</div>
+        <div><div class="tly">Hoy</div><div class="tlt">Ecosistemas & Monetización</div><div class="tld">Potenciando los negocios digitales del banco y arrancando la monetización de sus activos digitales.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WORLD ══ -->
+
+<section id="world">
+  <div class="rv" style="text-align:center">
+    <div class="ey" style="color:#6e6e73">🌍 Modo explorador activado</div>
+    <span class="wn" id="counter">0</span>
+    <div class="wl">países que he visitado</div>
+  </div>
+  <div class="ctags rv d2">
+    <span class="ct">🇩🇪 Alemania</span><span class="ct">🇦🇩 Andorra</span><span class="ct">🇦🇷 Argentina</span><span class="ct">🇦🇹 Austria</span><span class="ct">🇧🇪 Bélgica</span><span class="ct">🇧🇦 Bosnia</span><span class="ct">🇧🇷 Brasil</span><span class="ct">🇰🇭 Cambodia</span><span class="ct">🇨🇦 Canadá</span><span class="ct">🇨🇱 Chile</span><span class="ct">🇨🇳 China</span><span class="ct">🇨🇴 Colombia</span><span class="ct">🇨🇷 Costa Rica</span><span class="ct">🇭🇷 Croacia</span><span class="ct">🇨🇼 Curazao</span><span class="ct">🇪🇨 Ecuador</span><span class="ct">🇸🇻 El Salvador</span><span class="ct">🇸🇮 Eslovenia</span><span class="ct lv">🇪🇸 España ★</span><span class="ct">🇺🇸 Estados Unidos</span><span class="ct">🇫🇷 Francia</span><span class="ct">🇬🇷 Grecia</span><span class="ct">🇬🇹 Guatemala</span><span class="ct lv">🇳🇱 Holanda ★</span><span class="ct">🇭🇰 Hong Kong</span><span class="ct">🇭🇺 Hungría</span><span class="ct">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra</span><span class="ct">🇮🇹 Italia</span><span class="ct">🇯🇵 Japón</span><span class="ct">🇱🇺 Luxemburgo</span><span class="ct">🇲🇴 Macao</span><span class="ct">🇲🇾 Malaysia</span><span class="ct">🇲🇽 México</span><span class="ct">🇵🇦 Panamá</span><span class="ct">🇵🇪 Perú</span><span class="ct">🇵🇹 Portugal</span><span class="ct">🇸🇬 Singapur</span><span class="ct">🇨🇭 Suiza</span><span class="ct lv">🇹🇭 Tailandia ★</span><span class="ct">🇹🇼 Taiwan</span><span class="ct">🇺🇦 Ucrania</span><span class="ct">🇺🇾 Uruguay</span><span class="ct">🇻🇦 Vaticano</span><span class="ct">🇻🇪 Venezuela</span><span class="ct">🇻🇳 Vietnam</span>
+  </div>
+  <div class="wnote rv d3">Viví en estos países ★</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:960px;width:100%;margin-top:40px;" class="rv d3">
+    <label class="photo-slot photo-slot-dark" style="height:180px;">
+      <input type="file" accept="image/*" onchange="inlinePhoto(this,'wp0','wc0')">
+      <div class="photo-slot-label"><span>🌏</span><span>Asia favorita</span></div>
+      <img id="wp0" src="" style="display:none;">
+      <div class="photo-caption" id="wc0">Asia</div>
+    </label>
+    <label class="photo-slot photo-slot-dark" style="height:180px;">
+      <input type="file" accept="image/*" onchange="inlinePhoto(this,'wp1','wc1')">
+      <div class="photo-slot-label"><span>🇪🇺</span><span>Europa favorita</span></div>
+      <img id="wp1" src="" style="display:none;">
+      <div class="photo-caption" id="wc1">Europa</div>
+    </label>
+    <label class="photo-slot photo-slot-dark" style="height:180px;">
+      <input type="file" accept="image/*" onchange="inlinePhoto(this,'wp2','wc2')">
+      <div class="photo-slot-label"><span>🌎</span><span>América favorita</span></div>
+      <img id="wp2" src="" style="display:none;">
+      <div class="photo-caption" id="wc2">América</div>
+    </label>
+  </div>
+</section>
+
+<!-- ══ TECH ══ -->
+
+<section id="techstack">
+  <div class="ey rv">Sistema operativo personal</div>
+  <h2 class="st rv d1">Tech Stack</h2>
+  <div class="tg rv d2">
+    <div class="tc"><span class="tci">🍎</span><div class="tcn">Apple Ecosystem</div><div class="tcd">iPhone · Mac · iPad · Watch · AirPods · TV · HomePod</div></div>
+    <div class="tc"><span class="tci">🤖</span><div class="tcn">AI</div><div class="tcd">Claude · ChatGPT · automatización de todo</div></div>
+    <div class="tc"><span class="tci">📈</span><div class="tcn">IBKR</div><div class="tcd">Bolsa de valores · portfolio activo</div></div>
+    <div class="tc"><span class="tci">📷</span><div class="tcn">Fotografía</div><div class="tcd">Capturando el mundo en cada viaje</div></div>
+    <div class="tc"><span class="tci">🎮</span><div class="tcn">Gaming</div><div class="tcd">PlayStation 5 · últimos lanzamientos</div></div>
+    <div class="tc"><span class="tci">⚡</span><div class="tcn">Gadgets</div><div class="tcd">Early adopter · si salió ayer, ya lo tiene</div></div>
+    <div class="tc"><span class="tci">📚</span><div class="tcn">Audible</div><div class="tcd">Audiolibros · aprendiendo mientras se mueve</div></div>
+    <div class="tc"><span class="tci">🎙️</span><div class="tcn">Apple Podcasts</div><div class="tcd">Negocios · tecnología · cultura</div></div>
+  </div>
+</section>
+
+<!-- ══ PASSIONS ══ -->
+
+<section id="passions">
+  <div class="ey rv">Features incluidos</div>
+  <h2 class="st rv d1">Passions</h2>
+
+  <!-- Bento 1 -->
+
+  <div class="bento1 rv d2">
+    <div class="bc featured">
+      <span class="be">🌍</span>
+      <div>
+        <div class="bt">Viajero con la familia</div>
+        <div class="bs">45 países. Cada destino, una clase magistral para todos. Mi modo favorito.</div>
+        <label style="display:inline-block;margin-top:10px;cursor:pointer;">
+          <input type="file" accept="image/*" onchange="bkOverlay(this,'ov-travel')">
+          <span style="font-size:13px;color:var(--blue);">+ Agregar foto de viaje</span>
+        </label>
+      </div>
+      <img id="ov-travel" src="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:20px;opacity:.3;">
+    </div>
+    <div class="bc dk">
+      <span class="be">⚔️</span>
+      <div class="bt">Universos</div>
+      <div class="btags">
+        <span class="btag">Star Wars</span><span class="btag">Marvel</span><span class="btag">GOT</span><span class="btag">Stranger Things</span>
+      </div>
+    </div>
+    <div class="bc bl">
+      <span class="be">🥩</span>
+      <div class="bt">BBQ</div>
+      <div class="bs">Me encanta hacer carnes. La parrilla es mi espacio.</div>
+      <label style="display:inline-block;margin-top:8px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.6);">
+        <input type="file" accept="image/*" onchange="bkOverlay(this,'ov-bbq')">
+        + foto
+      </label>
+      <img id="ov-bbq" src="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:20px;opacity:.35;">
+    </div>
+    <div class="bc" style="background:#f0f0f5;">
+      <span class="be">🎾</span>
+      <div class="bt">En cancha</div>
+      <div class="bs">Tenis & fútbol. Competitivo en todo.</div>
+    </div>
+
+  </div>
+
+  <!-- Bento 2: Music + Audiobooks -->
+
+  <div class="bento2 rv d3">
+    <!-- Music card -->
+    <div class="bc bk" style="grid-column:span 2; height:200px;">
+      <div class="vinyl"></div>
+      <span class="be">🎵</span>
+      <div>
+        <div class="bt">Rock de los 80s & 90s</div>
+        <div class="bs" style="margin-top:8px;">La banda sonora de toda una generación. Siempre en las playlists.</div>
+      </div>
+    </div>
+    <!-- Audiobooks card -->
+    <div class="bc wine" style="grid-column:span 2; height:200px;">
+      <span class="be">📚</span>
+      <div>
+        <div class="bt">Audiolibros & Podcasts</div>
+        <div class="btags" style="margin-top:8px;">
+          <span class="btag">Audible</span>
+          <span class="btag">Apple Podcasts</span>
+          <span class="btag">Negocios</span>
+          <span class="btag">Tecnología</span>
+        </div>
+        <div class="bs">La biblioteca siempre activa. Aprendiendo mientras se vive.</div>
+        <label class="lib-zone rv" style="margin-top:10px;">
+          <input type="file" accept="image/*" onchange="bkOverlay(this,'ov-library')">
+          <span>📷</span>
+          <span>Tu foto de librería</span>
+        </label>
+        <img id="ov-library" src="" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:20px;opacity:.35;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bento 3: Fun Facts -->
+
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:14px;max-width:960px;width:100%;margin-top:14px;" class="rv d4">
+    <div class="bc" style="background:#ffdd00;height:160px;">
+      <span class="be">🟡</span>
+      <div class="bt" style="color:#1d1d1f;">Amarillo</div>
+      <div class="bs" style="color:rgba(0,0,0,.45);">Color favorito</div>
+    </div>
+    <div class="bc dk" style="height:160px;">
+      <span class="be">7️⃣</span>
+      <div class="bt">Número<br>favorito</div>
+      <div class="bs">Siempre el 7</div>
+    </div>
+    <div class="bc bl" style="height:160px;">
+      <span class="be">🍜</span>
+      <div class="bt">Thai Food</div>
+      <div class="bs">Mi comida favorita. Viví allá. Todo tiene sentido.</div>
+    </div>
+    <div class="bc dk" style="height:160px;">
+      <span class="be">💻</span>
+      <div class="bt">Primer HTML</div>
+      <div class="bs">Tercer curso de colegio. Internet recién llegaba al mundo.</div>
+    </div>
+    <div class="bc dk" style="height:160px;">
+      <span class="be">🤓</span>
+      <div class="bt">Geek de<br>nacimiento</div>
+      <div class="bs" style="color:#86868b;">Computadoras y electrónicos desde siempre. Me sale natural.</div>
+    </div>
+    <div class="bc" style="background:#2c1a0e;height:160px;">
+      <span class="be">☕</span>
+      <div class="bt" style="color:#f5f5f7;">Café</div>
+      <div class="bs" style="color:#a0785a;">Combustible esencial. Sin negociación.</div>
+    </div>
+  </div>
+
+  <!-- Bento 4: Familia + TV + Fútbol -->
+
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px;max-width:960px;width:100%;margin-top:14px;" class="rv d2">
+
+```
+<!-- Familia feliz - featured -->
+<div class="bc bk" style="height:220px;">
+  <span class="be">❤️</span>
+  <div>
+    <div class="bt">Familia feliz</div>
+    <div class="bs">Somos 5 más 3 perros. Viajamos juntos, vivimos juntos cada aventura. Lo mejor de la vida.</div>
+  </div>
+</div>
+
+<!-- Legos y robots -->
+<div class="bc bl" style="height:220px;">
+  <span class="be">🧩</span>
+  <div class="bt">Legos &<br>Robots</div>
+  <div class="bs">Con mis hijos. Horas y horas armando.</div>
+</div>
+
+<!-- Ajedrez -->
+<div class="bc dk" style="height:220px;">
+  <span class="be">♟️</span>
+  <div class="bt">Ajedrez</div>
+  <div class="bs">La mente siempre en movimiento.</div>
+</div>
+
+<!-- Barcelona SC -->
+<div class="bc" style="background:#FFD700;height:220px;">
+  <span class="be">⚽</span>
+  <div class="bt" style="color:#1d1d1f;">Barcelona SC</div>
+  <div class="bs" style="color:rgba(0,0,0,.5);">Hincha de corazón. Siempre Ídolo.</div>
+</div>
+```
+
+  </div>
+
+  <!-- Bento 5: TV Show -->
+
+  <div style="display:grid;grid-template-columns:1fr;gap:14px;max-width:960px;width:100%;margin-top:14px;" class="rv d3">
+    <div class="bc" style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);height:160px;flex-direction:row;align-items:center;gap:28px;padding:32px 36px;">
+      <div style="font-size:52px;flex-shrink:0;">📺</div>
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#f5a623;margin-bottom:6px;">Fun Fact Secreto</div>
+        <div class="bt" style="font-size:22px;">Fui host de TV</div>
+        <div class="bs" style="color:#86868b;margin-top:4px;">Fui host de <em style="color:#f5f5f7;">"Te Patina"</em> — bromas, chistes y curiosidades. Sí, en televisión. 📺</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══ HACKER ══ -->
+
+<section id="hacker">
+  <div class="hinner">
+    <div class="ey rv" style="color:#6e6e73">Modo oculto desbloqueado</div>
+    <h2 class="st rv d1">Life<br>Hacker</h2>
+    <p class="hp rv d2">Me gusta buscar la forma más inteligente de hacer las cosas. <em>Siempre hay un mejor camino.</em> Y siempre encuentro uno.</p>
+    <div class="term rv d3">
+      <div class="tbar">
+        <div class="tdot r"></div><div class="tdot y"></div><div class="tdot g"></div>
+        <span class="ttitle">santiago — life-optimizer</span>
+      </div>
+      <div class="tbody">
+        <span class="tline"><span class="tp">santiago@life ~ % </span><span class="tc2">run --mode optimizer</span></span>
+        <span class="tline to">✓ Oportunidad encontrada: precio caído -35% en vuelo</span>
+        <span class="tline to">✓ Proceso manual eliminado: automatizado en 12 min</span>
+        <span class="tline to">✓ Gadget nuevo: first batch, enviado antes del lanzamiento</span>
+        <span class="tline to">✓ AI integrado: tarea de 2h completada en 8 min</span>
+        <span class="tline to">✓ Hack del día: descuento que nadie más vio</span>
+        <span class="tline tcm"># Siempre hay un camino mejor.</span>
+        <span class="tline"><span class="tp">santiago@life ~ % </span><span class="cur"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FINAL ══ -->
+
+<section id="final">
+  <div class="fey rv">Unboxing completo</div>
+  <h2 class="fh rv d1">Hecho para<br>impactar.</h2>
+  <p class="fp rv d2">Un ser humano curioso, apasionado y en constante actualización.</p>
+  <div class="fstats rv d3">
+    <div class="fs"><span class="fn">45</span><span class="fl">Años</span></div>
+    <div class="fs"><span class="fn">45</span><span class="fl">Países</span></div>
+    <div class="fs"><span class="fn">3</span><span class="fl">Vividos</span></div>
+    <div class="fs"><span class="fn">5+3🐕</span><span class="fl">Familia</span></div>
+    <div class="fs"><span class="fn">🍎</span><span class="fl">All-in</span></div>
+  </div>
+  <div class="nblock rv d4">
+    <div class="nbig">Santiago Hidalgo</div>
+    <div class="nrole">Ingeniero · MBA · Explorador · Lojano · Papá · Techie · Optimizer</div>
+  </div>
+</section>
+
+<script>
+  // PROGRESS
+  const prog = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    prog.style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
+  });
+
+  // NAV DARK/LIGHT
+  const nav = document.getElementById('nav');
+  const dkSec = ['hero','inbox','world','hacker'];
+  window.addEventListener('scroll', () => {
+    const mid = window.scrollY + 52;
+    let dk = false;
+    dkSec.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && mid >= el.offsetTop && mid <= el.offsetTop + el.offsetHeight) dk = true;
+    });
+    nav.classList.toggle('dk', dk);
+  });
+
+  // REVEAL
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.08, rootMargin:'0px 0px -40px 0px' });
+  document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+  // STAGGER
+  document.querySelectorAll('.chip,.tc,.bc,.ct,.sp,.tlr').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.03) + 's';
+    el.classList.add('rv');
+    obs.observe(el);
+  });
+
+  // COUNTER
+  const cEl = document.getElementById('counter');
+  const cObs = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    let n = 0;
+    const t = setInterval(() => { cEl.textContent = ++n; if (n >= 45) clearInterval(t); }, 28);
+    cObs.disconnect();
+  });
+  cObs.observe(cEl);
+
+  // PHOTO HELPERS
+  function heroBg(input) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const img = document.getElementById('hero-bg');
+      img.src = e.target.result; img.style.display = 'block';
+      input.closest('label').style.display = 'none';
+    };
+    r.readAsDataURL(file);
+  }
+
+  function fillCard(input, imgId, btn) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const img = document.getElementById(imgId);
+      img.src = e.target.result; img.style.display = 'block';
+      btn.style.display = 'none';
+    };
+    r.readAsDataURL(file);
+  }
+
+  function bkOverlay(input, imgId) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const img = document.getElementById(imgId);
+      img.src = e.target.result; img.style.display = 'block';
+      input.closest('label').style.display = 'none';
+    };
+    r.readAsDataURL(file);
+  }
+
+  // Save photo to element + localStorage
+  function savePhoto(imgId, dataUrl, capId) {
+    const img = document.getElementById(imgId);
+    if (!img) return;
+    img.src = dataUrl; img.style.display = 'block';
+    if (capId) { const c = document.getElementById(capId); if(c) c.style.display='block'; }
+    // hide placeholder label
+    const lbl = img.closest('label') || img.parentElement.querySelector('label');
+    if (lbl) { const ph = lbl.querySelector('.photo-slot-label'); if(ph) ph.style.display='none'; }
+    try { localStorage.setItem('ph_' + imgId, dataUrl); } catch(e) {}
+  }
+
+  function inlinePhoto(input, imgId, capId) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => savePhoto(imgId, e.target.result, capId);
+    r.readAsDataURL(file);
+  }
+
+  function heroBg(input) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const img = document.getElementById('hero-bg');
+      img.src = e.target.result; img.style.display = 'block';
+      input.closest('label').style.display = 'none';
+      try { localStorage.setItem('ph_hero-bg', e.target.result); } catch(e) {}
+    };
+    r.readAsDataURL(file);
+  }
+
+  function fillCard(input, imgId, btn) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const img = document.getElementById(imgId);
+      img.src = e.target.result; img.style.display = 'block';
+      btn.style.display = 'none';
+      try { localStorage.setItem('ph_' + imgId, e.target.result); } catch(e) {}
+    };
+    r.readAsDataURL(file);
+  }
+
+  function bkOverlay(input, imgId) {
+    const file = input.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = e => {
+      const img = document.getElementById(imgId);
+      img.src = e.target.result; img.style.display = 'block';
+      input.closest('label').style.display = 'none';
+      try { localStorage.setItem('ph_' + imgId, e.target.result); } catch(e) {}
+    };
+    r.readAsDataURL(file);
+  }
+
+  // Restore photos from localStorage on load
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith('ph_')) continue;
+        const imgId = key.replace('ph_', '');
+        const val = localStorage.getItem(key);
+        const img = document.getElementById(imgId);
+        if (img && val) {
+          img.src = val; img.style.display = 'block';
+          const lbl = img.closest('label');
+          if (lbl) { const ph = lbl.querySelector('.photo-slot-label'); if(ph) ph.style.display='none'; }
+          // show captions
+          const capEl = document.getElementById(imgId.replace(/^(fp|wp|g)(\d)$/, (m,p,n)=> p+'c'+n) );
+          if (capEl) capEl.style.display = 'block';
+        }
+      }
+    } catch(e) {}
+  });
+
+  // Download with embedded photos
+  function downloadWithPhotos() {
+    const btn = document.getElementById('dl-btn');
+    btn.textContent = '⏳ Generando...'; btn.classList.add('saving');
+
+    setTimeout(() => {
+      let html = document.documentElement.outerHTML;
+
+      // Embed all loaded photos into the HTML source
+      document.querySelectorAll('img[id]').forEach(img => {
+        if (img.src && img.src.startsWith('data:')) {
+          // Replace placeholder src in html
+          html = html.replace(
+            new RegExp('id="' + img.id + '" src=""', 'g'),
+            'id="' + img.id + '" src="' + img.src + '"'
+          );
+          html = html.replace(
+            new RegExp('id="' + img.id + '" src="[^"]*" style="display:none', 'g'),
+            'id="' + img.id + '" src="' + img.src + '" style="display:block'
+          );
+        }
+      });
+
+      const blob = new Blob([html], {type: 'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'santiago-hidalgo.html';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      btn.textContent = '✅ Guardado'; 
+      setTimeout(() => { btn.textContent = '📥 Guardar con fotos'; btn.classList.remove('saving'); }, 2500);
+    }, 100);
+  }
+</script>
+
+</body>
+</html>
